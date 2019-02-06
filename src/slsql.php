@@ -1,6 +1,6 @@
 <?php
 /**
- * WTFPL License (http://www.wtfpl.net/)
+ * WTFPL License (http://www.wtfpl.net/) - https://gitlab.com/CrBast/php-sql_simplelife/blob/master/LICENSE
  * 
  * Class that simply makes life easier
  * 
