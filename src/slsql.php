@@ -1,30 +1,40 @@
 <?php
 /**
- * WTFPL License (http://www.wtfpl.net/) - https://gitlab.com/CrBast/php-sql_simplelife/blob/master/LICENSE
+ * WTFPL License (http://www.wtfpl.net/) - https://gitlab.com/CrBast/php-sqlsimplelife/blob/master/LICENSE
  * 
  * Class that simply makes life easier
  * 
+ * Default configuration : XAMPP config
+ * IN (array([
+ *      dbName*,
+ *      host,
+ *      user,
+ *      psw
+ * ])
+ * 
  * #Example 1 (full)
- *      $db = new slsql();
+ *      $db = new slsql(array());
  *      $db->connect();
  *      $db->send($request, $arraySettings)
  * 
  * #Example 2 (lite)
- *      $db = new slsql();
+ *      $db = new slsql(array());
  *      $db->send($request, $arraySettings)
  * 
  * Return Type array([value], [status], [message])
  */
 class slsql{
-    private $_dsn = 'host=127.0.0.1:33066';
-    private $_user = 'root';
-    private $_password = '';
-    private $_db;
-    private $_dbName;
-    private $isConnected = false;
+    private $dsn, 
+        $user = 'root', 
+        $password = '', 
+        $db, $dbName, 
+        $isConnected = false;
 
-    public function __construct($dbName){
-        $this->_dbName = $dbName;
+    public function construct($params){
+        $this->dbName = $params['dbName'];
+        $this->dsn = isset($params['host']) ? $params['host'] : '127.0.0.1:3366';
+        $this->user = isset($params['user']) ? $params['user'] : 'root';
+        $this->password = isset($params['psw']) ? $params['psw'] : '';
     }
     
     /**
@@ -36,7 +46,7 @@ class slsql{
      */
     public function connect(){
         try {
-            $this->_db = new PDO('mysql:dbname='.$this->_dbName . ';' . $this->_dsn, $this->_user, $this->_password); 
+            $this->db = $this->createDB(); 
             $this->isConnected = true;
             return $this->createMessage('', 1, '');
         } catch ( Exception $e ) 
@@ -47,7 +57,7 @@ class slsql{
 
     private function connectDB(){
         try{
-            $this->_db = new PDO('mysql:dbname='.$this->_dbName . ';' . $this->_dsn, $this->_user, $this->_password);
+            $this->db = $this->createDB();
         } catch( Exception $e ){
 
         }
@@ -72,7 +82,7 @@ class slsql{
             $this->isConnected = true;
         }
         try {
-            $stmt = $this->_db->prepare($request); 
+            $stmt = $this->db->prepare($request); 
             $stmt->execute($array); 
             return  $this->createMessage($stmt, 1, '');
         } catch (Exception $e) {
@@ -85,5 +95,12 @@ class slsql{
      */
     private function createMessage($value, $status, $message){
         return array('value' => $value, 'status' => $status, 'message' => $message);
+    }
+
+    /**
+     * Create DB object (PDO)
+     */
+    private function createDB(){
+        return new PDO('mysql:dbname='.$this->dbName . ';' . $this->dsn, $this->user, $this->password);
     }
 }
