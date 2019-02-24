@@ -4,6 +4,7 @@
 1. Import class => `require "slsql.php";`
 2. Have fun!
 
+📑 See documentation : [📔](https://gitlab.com/CrBast/php-sql_simplelife/wikis/home)
 ## Info
 
 📌 
