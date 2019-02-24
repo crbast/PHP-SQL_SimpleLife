@@ -92,7 +92,7 @@ class slsql{
         try {
             $stmt = $this->db->prepare($request); 
             $stmt->execute($array); 
-            return  createMessage($stmt->fetchAll(), true, '');
+            return  createMessage($stmt, true, '');
         } catch (Exception $e) {
             return  createMessage('', false, $e->getMessage());
         }
@@ -122,7 +122,7 @@ class slsql{
             $db = new PDO($env['DBType'].':dbname='. $env['DBName'] .';host=' . $env['Host'], $env['User'], $env['Password']);
             $stmt = $db->prepare($request); 
             $stmt->execute($array); 
-            return createMessage($stmt->fetchAll(), 1, '');
+            return createMessage($stmt, 1, '');
         } catch (Exception $e) {
             return createMessage('', false, $e->getMessage());
         }
