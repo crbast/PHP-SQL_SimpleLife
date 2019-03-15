@@ -1,9 +1,9 @@
 <?php
 /**
  * WTFPL License (http://www.wtfpl.net/) - https://gitlab.com/CrBast/php-sqlsimplelife/blob/master/LICENSE
- * 
+ *
  * SimpleLifeSQL
- * 
+ *
  * Default configuration : XAMPP config
  * IN (array([
  *      dbName*,
@@ -12,28 +12,30 @@
  *      user,
  *      psw
  * ])
- * 
+ *
  * #Example 1 (full)
  *      $db = new slsql(array());
  *      $db->connect();
  *      $db->send($request, $arraySettings)
- * 
+ *
  * #Example 2 (lite)
  *      $db = new slsql(array());
  *      $db->send($request, $arraySettings)
- * 
+ *
  * Return Type array([value], [status], [message])
  */
-class slsql{
+class slsql
+{
     private $dsn,
-            $user,
-            $password,
-            $db,
-            $dbType,
-            $dbName,
-            $isConnected = false;
+    $user,
+    $password,
+    $db,
+    $dbType,
+    $dbName,
+    $isConnected = false;
 
-    function __construct($params){
+    function __construct($params)
+    {
         $this->dbName = $params['dbName'];
         $this->dsn = isset($params['host']) ? $params['host'] : '127.0.0.1:3306';
         $this->dbType = isset($params['dbType']) ? $params['dbType'] : 'mysql';
@@ -41,97 +43,154 @@ class slsql{
         $this->password = isset($params['psw']) ? $params['psw'] : '';
     }
 
-    function __destruct(){
+    function __destruct()
+    {
         unset($this->dbName, $this->dsn, $this->dbType, $this->user, $this->password, $this->isConnected, $this->db);
     }
-    
+
     /**
      * !! Not mandatory. During "send()" method the object creates the connection if it does not exist.
-     * Connect to database. 
-     * Return : 
-     *      [status] = true(OK)/false(Problem),
+     * Connect to database.
+     * Return :
+     *      [status] = TRUE(OK)/FALSE(Problem),
      *      [message] = Exception message => if [status] = false
      */
-    public function connect(){
+    public function connect()
+    {
         try {
-            $this->db = $this->createDB(); 
+            $this->db = $this->createDB();
             $this->isConnected = true;
             return createMessage('', true, '');
-        } catch ( Exception $e ) 
-        {  
+        } catch (Exception $e) {
             return createMessage('', false, $e->getMessage());
         }
     }
 
-    private function connectDB(){
-        try{
+    private function connectDB()
+    {
+        try {
             $this->db = $this->createDB();
-        } catch( Exception $e ){
+        } catch (Exception $e) {
             return createMessage('', false, $e->getMessage());
         }
-    } 
+    }
 
     /**
      * Send Request.
      * Params => send($request, $array) :
      *      Request : sql request
      *      Array: Array with data insertion
-     * 
+     *
      * Example : send('SELECT * FROM user WHERE user.id = ?', array(12))
-     * 
-     * Return : 
+     *
+     * Return :
      *      [value] = result,
-     *      [status] = true(OK)/false(Problem),
+     *      [status] = TRUE(OK)/FALSE(Problem),
      *      [message] = Exception message => if [status] = false
      */
-    public function send($request, $array){
-        if(!$this->isConnected){
+    public function send($request, $array)
+    {
+        if (!$this->isConnected) {
             $this->connectDB();
             $this->isConnected = true;
         }
         try {
-            $stmt = $this->db->prepare($request); 
-            $stmt->execute($array); 
-            return  createMessage($stmt, true, '');
+            $stmt = $this->db->prepare($request);
+            $stmt->execute($array);
+            return createMessage($stmt, true, '');
         } catch (Exception $e) {
-            return  createMessage('', false, $e->getMessage());
+            return createMessage('', false, $e->getMessage());
         }
     }
 
     /**
      * Create DB object (PDO)
      */
-    public function createDB(){
-        return new PDO($this->dbType.':dbname='.$this->dbName . ';host=' . $this->dsn, $this->user, $this->password);
+    public function createDB()
+    {
+        return new PDO($this->dbType . ':dbname=' . $this->dbName . ';host=' . $this->dsn, $this->user, $this->password);
     }
 
     /**
      * Send Request.
      * the parameters are in the .env file
-     * 
+     *
      * Return :
      *      [value] = result,
-     *      [status] = 1(OK)/0(Problem),
+     *      [status] = TRUE(OK)/FALSE(Problem),
      *      [message] = Exception message => if [status] = false
      */
-    public static function go($request, $array){
-        try{
-            require '.env';
-        } catch (Exception $e) { exit(createMessage('', false, 'Cannot find <.env> file')); }
+    public static function go($request, $array = array())
+    {
         try {
-            $db = new PDO($env['DBType'].':dbname='. $env['DBName'] .';host=' . $env['Host'], $env['User'], $env['Password']);
-            $stmt = $db->prepare($request); 
-            $stmt->execute($array); 
-            return createMessage($stmt, 1, '');
+            $db = slsql::getPDO();
+            $stmt = $db->prepare($request);
+            $stmt->execute($array);
+            return createMessage($stmt, true, '');
         } catch (Exception $e) {
             return createMessage('', false, $e->getMessage());
         }
     }
+
+    /**
+     * Send Transaction.
+     * the parameters are in the .env file
+     *
+     * Return :
+     *      [value] = result,
+     *      [status] = TRUE(OK)/FALSE(Problem),
+     *      [message] = Exception message => if [status] = false
+     */
+    public static function goT(SLTransaction $trans){
+        $db = slsql::getPDO();
+        try {
+            $db->beginTransaction(); 
+            foreach ($trans->Get() as $transaction) {
+                $stmt = $db->prepare($transaction['req']);
+                $stmt->execute($transaction['arr']);
+            }
+            $db->commit(); 
+            return createMessage('', true, '');
+        } catch (Exception $e) {
+            $db->rollback();
+            return createMessage('', false, $e->getMessage());
+        }
+        
+    }
+
+    private static function getPDO()
+    {
+        try {
+            require '.env';
+        } catch (Exception $e) {exit(createMessage('', false, 'Cannot find <.env> file'));}
+        try {
+            return new PDO($env['DBType'] . ':dbname=' . $env['DBName'] . ';host=' . $env['Host'], $env['User'], $env['Password']);
+        } catch (Exception $e) {
+            exit(createMessage('', false, $e->getMessage()));
+        }
+    }
+}
+
+class SLTransaction 
+{
+    private $allTrans;
+    public function __construct(){
+    }
+
+    public function Add($request, $array = array()){
+        $this->allTrans[] = array('req' => $request, 'arr' => $array);
+    }
+
+    public function Get(){
+        return $this->allTrans;
+    }
+
 }
 
 /**
  * Status : true = OK | false = problem
  */
-function createMessage($value, $status, $message){
+function createMessage($value, $status, $message)
+{
     return array('value' => $value, 'status' => $status, 'message' => $message);
 }
