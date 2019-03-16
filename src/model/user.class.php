@@ -11,7 +11,6 @@ class Users extends Model
         $this->mail = $mail;
     }
 
-    // Create / Update
     public function save()
     {
         if ($this->id == null) {
@@ -20,24 +19,5 @@ class Users extends Model
         } else {
             slsql::go('UPDATE ' . get_class() . ' SET `name`=?,`psw`=?,`email`=? WHERE id = ?', array($this->name, $this->psw, $this->mail, $this->id));
         }
-    }
-
-    public function remove()
-    {
-        slsql::go('DELETE FROM ' . get_class() . ' WHERE id = ?', array($this->id));
-    }
-
-    public static function get($condition, $arr = array())
-    {
-        $result = slsql::go('select * from ' . get_called_class() . ' where ' . $condition . ";", $arr)['value']->fetchAll();
-        if ($result == null) {
-            return new EmptyListModels;
-        }
-        $list = new ListModels;
-
-        foreach ($result as $entry) {
-            $list->add(new Users($entry['name'], $entry['psw'], $entry['email'], $entry['id']));
-        }
-        return $list;
     }
 }

@@ -2,9 +2,32 @@
 include 'slsql.php';
 abstract class Model
 {
+    /**
+     * Create or update model
+     */
     abstract public function save();
-    abstract public function remove();
-    abstract public static function get($condition, $arr = array());
+
+    public static function get($condition, $arr = array())
+    {
+        $result = slsql::go('select * from ' . get_called_class() . ' where ' . $condition . ";", $arr)['value']->fetchAll();
+        if ($result == null) {
+            return new EmptyListModels;
+        }
+        $list = new ListModels;
+
+        foreach ($result as $entry) {
+            $list->add(new Users($entry['name'], $entry['psw'], $entry['email'], $entry['id']));
+        }
+        return $list;
+    }
+
+    /**
+     * Remove model
+     */
+    public function remove()
+    {
+        slsql::go('DELETE FROM ' . get_called_class() . ' WHERE id = ?', array($this->id));
+    }
 
     public static function getAllId()
     {
@@ -50,7 +73,6 @@ class ListModels
 
     public function firstOrDefault($default = null)
     {
-        echo ('Valeur : ' . var_dump($this->isEmpty));
         return !$this->isEmpty ? reset($this->arr) : $default;
     }
 
