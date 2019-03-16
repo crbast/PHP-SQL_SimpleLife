@@ -4,7 +4,7 @@ abstract class Model
 {
     abstract public function save();
     abstract public function remove();
-    abstract public static function Get($condition, $arr = array());
+    abstract public static function get($condition, $arr = array());
 
     public static function getAllId()
     {
@@ -36,7 +36,7 @@ abstract class Model
 class ListModels
 {
     private $arr;
-    private $isEmpty = false;
+    public $isEmpty = false;
 
     public function add(Model $model)
     {
@@ -50,12 +50,23 @@ class ListModels
 
     public function firstOrDefault($default = null)
     {
-        return !$this->isEmpty ? $this->arr[0] : $default;
+        echo ('Valeur : ' . var_dump($this->isEmpty));
+        return !$this->isEmpty ? reset($this->arr) : $default;
     }
 
     public function first()
     {
-        return !$this->isEmpty ? $this->arr[0] : null;
+        return !$this->isEmpty ? reset($this->arr) : null;
+    }
+
+    public function lastOrDefault($default = null)
+    {
+        return !$this->isEmpty ? end($this->arr) : $default;
+    }
+
+    public function last()
+    {
+        return !$this->isEmpty ? end($this->arr) : null;
     }
 }
 class EmptyListModels extends ListModels

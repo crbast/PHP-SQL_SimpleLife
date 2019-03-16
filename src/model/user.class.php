@@ -30,12 +30,13 @@ class Users extends Model
     public static function get($condition, $arr = array())
     {
         $result = slsql::go('select * from ' . get_called_class() . ' where ' . $condition . ";", $arr)['value']->fetchAll();
-        if (!$result) {
+        if ($result == null) {
             return new EmptyListModels;
         }
-        $list = new ListModels();
+        $list = new ListModels;
+
         foreach ($result as $entry) {
-            $list->add(new self($entry['name'], $entry['psw'], $entry['email'], $entry['id']));
+            $list->add(new Users($entry['name'], $entry['psw'], $entry['email'], $entry['id']));
         }
         return $list;
     }
