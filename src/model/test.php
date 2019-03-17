@@ -8,6 +8,15 @@ echo '<br>';
 echo '<br>';
 
 var_dump(Users::getAllDistinct('email'));
+
+$user = new Users("name", "psw", "mail");
+$user->Save();
+$user->name = 'CreB';
+$user->Save();
+
+echo '<br>';
+
+var_dump($user);
 /*
 echo ('<br>');
 var_dump(Users::getAllId());*/
