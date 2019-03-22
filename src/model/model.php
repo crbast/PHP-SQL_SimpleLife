@@ -3,6 +3,8 @@
  * WTFPL License (http://www.wtfpl.net/) - https://gitlab.com/CrBast/php-sqlsimplelife/blob/master/LICENSE
  *
  * SimpleLifeSQL
+ * 
+ * Documentation : https://gitlab.com/CrBast/php-sql_simplelife/wikis/Model
  */
 abstract class Model
 {
@@ -54,30 +56,41 @@ abstract class Model
         unset($query_values, $query_name_values, $query_values_after, $query_set);
     }
 
-    public static function get($condition, $arr = array())
+    public static function get($condition = null, $arr = array())
     {
-        $result = slsql::go('select * from ' . get_called_class() . ' where ' . $condition . ";", $arr)['value']->fetchAll();
+        if(!$condition)
+            $result = slsql::go('select * from ' . get_called_class(), $arr)['value']->fetchAll();
+        else
+            $result = slsql::go('select * from ' . get_called_class() . ' where ' . $condition . ";", $arr)['value']->fetchAll();
         if ($result == null) {
             return new EmptyListModels;
         }
         $list = new ListModels;
 
-        foreach ($result as $entry) {
-            $list->add(new Users($entry['name'], $entry['psw'], $entry['email'], $entry['id']));
+        foreach (get_class_vars(get_called_class()) as $name => $value) {
+            $fields[] = array('name' => $name, 'val' => $value);
+        }
+        $count = count($fields);
+
+        $temp = get_called_class();
+        foreach ($result as $model) {
+            $tempModel = new $temp;
+            for ($i = 0; $i < $count; $i++) {
+                $tempModel->{$fields[$i]['name']} = $model[$fields[$i]['name']];
+            }
+            $list->add($tempModel);
         }
         return $list;
     }
 
-    /**
-     * Remove model
-     */
     public function remove()
     {
         slsql::go('DELETE FROM ' . get_called_class() . ' WHERE id = ?', array($this->id));
     }
 
-    public static function getAllId()
+    public static function ids()
     {
+        $list = null;
         $rows = slsql::go('SELECT id FROM ' . get_called_class())['value']->fetchAll();
         foreach ($rows as $row) {
             $list[] = $row['id'];
@@ -85,21 +98,35 @@ abstract class Model
         return $list;
     }
 
-    public static function getAll($field = 'id')
+    public static function all($field = 'id')
     {
+        $list = null;
         $rows = slsql::go('SELECT ' . $field . ' FROM ' . get_called_class())['value']->fetchAll();
         foreach ($rows as $row) {
             $list[] = $row[$field];
         }
         return $list;
     }
-    public static function getAllDistinct($field = 'id')
+
+    public static function allDistinct($field = 'id')
     {
+        $list = null;
         $rows = slsql::go('SELECT DISTINCT ' . $field . ' FROM ' . get_called_class())['value']->fetchAll();
         foreach ($rows as $row) {
             $list[] = $row[$field];
         }
         return $list;
+    }
+
+    public static function count(){
+        return slsql::go('SELECT count(*) FROM ' . get_called_class())['value']->fetchColumn();
+    }
+
+    public static function countWhere($condition = null, $arr = array()){
+        if(!$condition)
+            return get_called_class()::count();
+        else
+            return slsql::go('SELECT count(*) FROM ' . get_called_class() . ' WHERE ' . $condition, $arr)['value']->fetchColumn();
     }
 }
 
@@ -113,7 +140,7 @@ class ListModels
         $this->arr[] = $model;
     }
 
-    public function get()
+    public function all()
     {
         return $this->arr;
     }
