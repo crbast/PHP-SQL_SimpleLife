@@ -1,5 +1,9 @@
 <?php
-include 'slsql.php';
+/*
+ * WTFPL License (http://www.wtfpl.net/) - https://gitlab.com/CrBast/php-sqlsimplelife/blob/master/LICENSE
+ *
+ * SimpleLifeSQL
+ */
 abstract class Model
 {
     public function save()
