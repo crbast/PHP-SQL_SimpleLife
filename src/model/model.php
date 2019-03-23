@@ -1,10 +1,10 @@
 <?php
 /*
- * WTFPL License (http://www.wtfpl.net/) - https://gitlab.com/CrBast/php-sqlsimplelife/blob/master/LICENSE
+ * WTFPL License (http://www.wtfpl.net/) - https: //github.com/CrBast/PHP-SQL_SimpleLife/blob/master/LICENSE
  *
  * SimpleLifeSQL
- * 
- * Documentation : https://gitlab.com/CrBast/php-sql_simplelife/wikis/Model
+ *
+ * Documentation : https: //github.com/CrBast/PHP-SQL_SimpleLife/wiki/Model
  */
 abstract class Model
 {
@@ -58,10 +58,12 @@ abstract class Model
 
     public static function get($condition = null, $arr = array())
     {
-        if(!$condition)
+        if (!$condition) {
             $result = slsql::go('select * from ' . get_called_class(), $arr)['value']->fetchAll();
-        else
+        } else {
             $result = slsql::go('select * from ' . get_called_class() . ' where ' . $condition . ";", $arr)['value']->fetchAll();
+        }
+
         if ($result == null) {
             return new EmptyListModels;
         }
@@ -118,15 +120,19 @@ abstract class Model
         return $list;
     }
 
-    public static function count(){
+    public static function count()
+    {
         return slsql::go('SELECT count(*) FROM ' . get_called_class())['value']->fetchColumn();
     }
 
-    public static function countWhere($condition = null, $arr = array()){
-        if(!$condition)
+    public static function countWhere($condition = null, $arr = array())
+    {
+        if (!$condition) {
             return get_called_class()::count();
-        else
+        } else {
             return slsql::go('SELECT count(*) FROM ' . get_called_class() . ' WHERE ' . $condition, $arr)['value']->fetchColumn();
+        }
+
     }
 }
 

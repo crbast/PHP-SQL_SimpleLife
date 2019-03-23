@@ -1,6 +1,6 @@
 <?php
 /**
- * WTFPL License (http://www.wtfpl.net/) - https://gitlab.com/CrBast/php-sqlsimplelife/blob/master/LICENSE
+ * WTFPL License (http://www.wtfpl.net/) - https: //github.com/CrBast/PHP-SQL_SimpleLife/blob/master/LICENSE
  *
  * SimpleLifeSQL
  *
@@ -34,7 +34,7 @@ class slsql
     $dbName,
     $isConnected = false;
 
-    function __construct($params)
+    public function __construct($params)
     {
         $this->dbName = $params['dbName'];
         $this->dsn = isset($params['host']) ? $params['host'] : '127.0.0.1:3306';
@@ -43,7 +43,7 @@ class slsql
         $this->password = isset($params['psw']) ? $params['psw'] : '';
     }
 
-    function __destruct()
+    public function __destruct()
     {
         unset($this->dbName, $this->dsn, $this->dbType, $this->user, $this->password, $this->isConnected, $this->db);
     }
@@ -141,21 +141,22 @@ class slsql
      *      [status] = TRUE(OK)/FALSE(Problem),
      *      [message] = Exception message => if [status] = false
      */
-    public static function goT(SLTransaction $trans){
+    public static function goT(SLTransaction $trans)
+    {
         $db = slsql::getPDO();
         try {
-            $db->beginTransaction(); 
+            $db->beginTransaction();
             foreach ($trans->Get() as $transaction) {
                 $stmt = $db->prepare($transaction['req']);
                 $stmt->execute($transaction['arr']);
             }
-            $db->commit(); 
+            $db->commit();
             return createMessage('', true, '');
         } catch (Exception $e) {
             $db->rollback();
             return createMessage('', false, $e->getMessage());
         }
-        
+
     }
 
     private static function getPDO()
@@ -171,17 +172,20 @@ class slsql
     }
 }
 
-class SLTransaction 
+class SLTransaction
 {
     private $allTrans;
-    public function __construct(){
+    public function __construct()
+    {
     }
 
-    public function Add($request, $array = array()){
+    public function Add($request, $array = array())
+    {
         $this->allTrans[] = array('req' => $request, 'arr' => $array);
     }
 
-    public function Get(){
+    public function Get()
+    {
         return $this->allTrans;
     }
 
