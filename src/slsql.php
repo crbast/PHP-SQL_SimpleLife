@@ -146,12 +146,12 @@ class slsql
         $db = slsql::getPDO();
         try {
             $db->beginTransaction();
-            foreach ($trans->Get() as $transaction) {
+            foreach ($trans->get() as $transaction) {
                 $stmt = $db->prepare($transaction['req']);
                 $stmt->execute($transaction['arr']);
             }
             $db->commit();
-            return createMessage('', true, '');
+            return createMessage($stmt, true, '');
         } catch (Exception $e) {
             $db->rollback();
             return createMessage('', false, $e->getMessage());
@@ -175,20 +175,21 @@ class slsql
 class SLTransaction
 {
     private $allTrans;
-    public function __construct()
-    {
-    }
 
-    public function Add($request, $array = array())
+    public function add($request, $array = array())
     {
         $this->allTrans[] = array('req' => $request, 'arr' => $array);
     }
 
-    public function Get()
+    public function get()
     {
         return $this->allTrans;
     }
 
+    public function go()
+    {
+        return slsql::goT($this);
+    }
 }
 
 /**

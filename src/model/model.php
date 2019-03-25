@@ -170,6 +170,11 @@ class ListModels
     {
         return !$this->isEmpty ? end($this->arr) : null;
     }
+
+    public function count()
+    {
+        return count($this->arr);
+    }
 }
 class EmptyListModels extends ListModels
 {
