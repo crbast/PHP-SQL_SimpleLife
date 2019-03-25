@@ -17,7 +17,6 @@ abstract class Model
             }
         }
         $count = count($fields);
-
         if ($this->id == null) {
             $query_name_values = "";
             $query_values = array();
@@ -33,10 +32,10 @@ abstract class Model
                     $query_values_after .= ',?';
                     $query_name_values .= ',`' . $fields[$i] . '`';
                 }
-                $query_values[] = $this->{$fields[$i]};
+                $query_values[] .= $this->{$fields[$i]};
             }
 
-            slsql::go('INSERT INTO ' . get_called_class() . ' ' . $query_name_values . ' VALUES ' . $query_values_after . '', $query_values);
+            slsql::go('INSERT INTO ' . get_called_class() . ' ' . $query_name_values . ' VALUES ' . $query_values_after, $query_values);
             $this->id = slsql::go('SELECT id FROM ' . get_called_class() . ' ORDER BY id DESC LIMIT 1', array())['value']->fetch()['id'];
         } else {
             $query_set = "";
