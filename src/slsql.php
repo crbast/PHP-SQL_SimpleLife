@@ -126,8 +126,10 @@ class slsql
             $db = slsql::getPDO();
             $stmt = $db->prepare($request);
             $stmt->execute($array);
+            //var_dump($stmt);
             return createMessage($stmt, true, '');
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage());
             return createMessage('', false, $e->getMessage());
         }
     }
@@ -152,9 +154,9 @@ class slsql
             }
             $db->commit();
             return createMessage($stmt, true, '');
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $db->rollback();
-            return createMessage('', false, $e->getMessage());
+            exit(createMessage('', false, $e->getMessage()));
         }
 
     }
@@ -163,11 +165,15 @@ class slsql
     {
         try {
             require '.env';
-        } catch (Exception $e) {exit(createMessage('', false, 'Cannot find <.env> file'));}
-        try {
-            return new PDO($env['DBType'] . ':dbname=' . $env['DBName'] . ';host=' . $env['Host'], $env['User'], $env['Password']);
         } catch (Exception $e) {
-            exit(createMessage('', false, $e->getMessage()));
+            throw new Error("Error Processing Request");
+        }
+        try {
+            $db = new PDO($env['DBType'] . ':dbname=' . $env['DBName'] . ';host=' . $env['Host'], $env['User'], $env['Password']);
+            $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            return $db;
+        } catch (PDOException $e) {
+            throw new Error('Cannot create connection to DB. Error message : ');
         }
     }
 }
