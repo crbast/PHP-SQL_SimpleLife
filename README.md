@@ -1,7 +1,7 @@
 # PHP-SQL_SimpleLife 👌
 [![Build Status](https://travis-ci.com/CrBast/PHP-SQL_SimpleLife.svg?branch=ci-cd_integration)](https://travis-ci.com/CrBast/PHP-SQL_SimpleLife)
 ## How to use 🤷
-1. Import class => `require "slsql.php";`
+1. Include `autoload_slsql.php`
 2. Have fun!
 
 See documentation : [📔](https://github.com/CrBast/PHP-SQL_SimpleLife/wiki)
