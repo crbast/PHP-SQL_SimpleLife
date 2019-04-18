@@ -6,8 +6,17 @@
  *
  * Documentation : https: //github.com/CrBast/PHP-SQL_SimpleLife/wiki/Model
  */
+
+/**
+ * Class Model
+ */
 abstract class Model
 {
+    /**
+     * @throws Exception
+     * @example user->Save
+     * Save Model on database
+     */
     public function save()
     {
         foreach (get_class_vars(get_called_class()) as $name => $value) {
@@ -61,6 +70,12 @@ abstract class Model
         unset($query_values, $query_name_values, $query_values_after, $query_set);
     }
 
+    /**
+     * @param null $condition
+     * @param array $arr
+     * @return EmptyListModels|ListModels
+     * @throws Exception
+     */
     public static function get($condition = null, $arr = array())
     {
         if (!$condition) {
@@ -90,14 +105,21 @@ abstract class Model
         return $list;
     }
 
+    /**
+     * @throws Exception
+     */
     public function remove()
     {
         slsql::go('DELETE FROM ' . get_called_class() . ' WHERE id = ?', array($this->id));
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
     public static function ids()
     {
-        $list = null;
+        $list = array();
         $rows = slsql::go('SELECT id FROM ' . get_called_class())['value']->fetchAll();
         foreach ($rows as $row) {
             $list[] = $row['id'];
@@ -105,9 +127,14 @@ abstract class Model
         return $list;
     }
 
+    /**
+     * @param string $field
+     * @return array
+     * @throws Exception
+     */
     public static function all($field = 'id')
     {
-        $list = null;
+        $list = array();
         $rows = slsql::go('SELECT ' . $field . ' FROM ' . get_called_class())['value']->fetchAll();
         foreach ($rows as $row) {
             $list[] = $row[$field];
@@ -115,9 +142,14 @@ abstract class Model
         return $list;
     }
 
+    /**
+     * @param string $field
+     * @return array
+     * @throws Exception
+     */
     public static function allDistinct($field = 'id')
     {
-        $list = null;
+        $list = array();
         $rows = slsql::go('SELECT DISTINCT ' . $field . ' FROM ' . get_called_class())['value']->fetchAll();
         foreach ($rows as $row) {
             $list[] = $row[$field];
@@ -125,11 +157,21 @@ abstract class Model
         return $list;
     }
 
+    /**
+     * @return int
+     * @throws Exception
+     */
     public static function count()
     {
         return slsql::go('SELECT count(*) FROM ' . get_called_class())['value']->fetchColumn();
     }
 
+    /**
+     * @param null $condition
+     * @param array $arr
+     * @return int
+     * @throws Exception
+     */
     public static function countWhere($condition = null, $arr = array())
     {
         if (!$condition) {
@@ -141,46 +183,77 @@ abstract class Model
     }
 }
 
+/**
+ * Class ListModels
+ */
 class ListModels
 {
     private $arr;
     public $isEmpty = false;
 
-    public function add(Model $model)
+    /**
+     * @param Model $model
+     * Do not use this function
+     */
+    function add(Model $model)
     {
         $this->arr[] = $model;
     }
 
+    /**
+     * @return array
+     */
     public function all()
     {
         return $this->arr;
     }
 
+    /**
+     * @param null $default
+     * @return Model|$default
+     */
     public function firstOrDefault($default = null)
     {
         return !$this->isEmpty ? reset($this->arr) : $default;
     }
 
+    /**
+     * @return Model|null
+     */
     public function first()
     {
         return !$this->isEmpty ? reset($this->arr) : null;
     }
 
+    /**
+     * @param null $default
+     * @return Model|null
+     */
     public function lastOrDefault($default = null)
     {
         return !$this->isEmpty ? end($this->arr) : $default;
     }
 
+    /**
+     * @return Model|null
+     */
     public function last()
     {
         return !$this->isEmpty ? end($this->arr) : null;
     }
 
+    /**
+     * @return int
+     */
     public function count()
     {
         return count($this->arr);
     }
 }
+
+/**
+ * Class EmptyListModels
+ */
 class EmptyListModels extends ListModels
 {
     public function __construct()
