@@ -1,4 +1,5 @@
-<?php
+<?php namespace slsql\Model;
+
 /*
  * WTFPL License (http://www.wtfpl.net/) - https: //github.com/CrBast/PHP-SQL_SimpleLife/blob/master/LICENSE
  *
@@ -50,8 +51,8 @@ abstract class Model
                     $query_values[] .= $this->{$fields[$i]};
                 }
             }
-            slsql::go('INSERT INTO ' . get_called_class() . ' ' . $query_name_values . ' VALUES ' . $query_values_after, $query_values);
-            $this->id = slsql::go('SELECT id FROM ' . get_called_class() . ' ORDER BY id DESC LIMIT 1', array())['value']->fetch()['id'];
+            Slsql::go('INSERT INTO ' . get_called_class() . ' ' . $query_name_values . ' VALUES ' . $query_values_after, $query_values);
+            $this->id = Slsql::go('SELECT id FROM ' . get_called_class() . ' ORDER BY id DESC LIMIT 1', array())['value']->fetch()['id'];
         } else {
             $query_set = "";
             $query_values = array();
@@ -65,7 +66,7 @@ abstract class Model
                 $query_values[] = $this->{$fields[$i]};
             }
             $query_values[] = $this->{'id'};
-            slsql::go('UPDATE ' . get_called_class() . ' SET ' . $query_set . ' WHERE id = ?', $query_values);
+            Slsql::go('UPDATE ' . get_called_class() . ' SET ' . $query_set . ' WHERE id = ?', $query_values);
         }
         unset($query_values, $query_name_values, $query_values_after, $query_set);
     }
@@ -79,9 +80,9 @@ abstract class Model
     public static function get($condition = null, $arr = array())
     {
         if (!$condition) {
-            $result = slsql::go('select * from ' . get_called_class(), $arr)['value']->fetchAll();
+            $result = Slsql::go('select * from ' . get_called_class(), $arr)['value']->fetchAll();
         } else {
-            $result = slsql::go('select * from ' . get_called_class() . ' where ' . $condition . ";", $arr)['value']->fetchAll();
+            $result = Slsql::go('select * from ' . get_called_class() . ' where ' . $condition . ";", $arr)['value']->fetchAll();
         }
 
         if ($result == null) {
@@ -110,7 +111,7 @@ abstract class Model
      */
     public function remove()
     {
-        slsql::go('DELETE FROM ' . get_called_class() . ' WHERE id = ?', array($this->id));
+        Slsql::go('DELETE FROM ' . get_called_class() . ' WHERE id = ?', array($this->id));
     }
 
     /**
@@ -120,7 +121,7 @@ abstract class Model
     public static function ids()
     {
         $list = array();
-        $rows = slsql::go('SELECT id FROM ' . get_called_class())['value']->fetchAll();
+        $rows = Slsql::go('SELECT id FROM ' . get_called_class())['value']->fetchAll();
         foreach ($rows as $row) {
             $list[] = $row['id'];
         }
@@ -135,7 +136,7 @@ abstract class Model
     public static function all($field = 'id')
     {
         $list = array();
-        $rows = slsql::go('SELECT ' . $field . ' FROM ' . get_called_class())['value']->fetchAll();
+        $rows = Slsql::go('SELECT ' . $field . ' FROM ' . get_called_class())['value']->fetchAll();
         foreach ($rows as $row) {
             $list[] = $row[$field];
         }
@@ -150,7 +151,7 @@ abstract class Model
     public static function allDistinct($field = 'id')
     {
         $list = array();
-        $rows = slsql::go('SELECT DISTINCT ' . $field . ' FROM ' . get_called_class())['value']->fetchAll();
+        $rows = Slsql::go('SELECT DISTINCT ' . $field . ' FROM ' . get_called_class())['value']->fetchAll();
         foreach ($rows as $row) {
             $list[] = $row[$field];
         }
@@ -163,7 +164,7 @@ abstract class Model
      */
     public static function count()
     {
-        return slsql::go('SELECT count(*) FROM ' . get_called_class())['value']->fetchColumn();
+        return Slsql::go('SELECT count(*) FROM ' . get_called_class())['value']->fetchColumn();
     }
 
     /**
@@ -177,7 +178,7 @@ abstract class Model
         if (!$condition) {
             return get_called_class()::count();
         } else {
-            return slsql::go('SELECT count(*) FROM ' . get_called_class() . ' WHERE ' . $condition, $arr)['value']->fetchColumn();
+            return Slsql::go('SELECT count(*) FROM ' . get_called_class() . ' WHERE ' . $condition, $arr)['value']->fetchColumn();
         }
 
     }
@@ -195,7 +196,7 @@ class ListModels
      * @param Model $model
      * Do not use this function
      */
-    function add(Model $model)
+    public function add(Model $model)
     {
         $this->arr[] = $model;
     }
