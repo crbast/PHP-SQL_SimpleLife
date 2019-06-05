@@ -1,4 +1,5 @@
-<?php
+<?php namespace slqsl\slqsl;
+
 /**
  * WTFPL License (http://www.wtfpl.net/) - https: //github.com/CrBast/PHP-SQL_SimpleLife/blob/master/LICENSE
  *
@@ -24,7 +25,7 @@
  *
  * Return Type array([value], [status], [message])
  */
-class slsql
+class Slsql
 {
     private $dsn,
     $user,
@@ -164,7 +165,7 @@ class slsql
     private static function getPDO()
     {
         try {
-            require '.env';
+            require '../.env';
         } catch (Exception $e) {
             throw new Error("Error Processing Request");
         }

@@ -1,0 +1,21 @@
+{
+    "name": "crbast/slsql",
+    "description": "Simplifier of SQL queries. Basic ORM with Model.",
+    "type": "library",
+    "license": "WTFPL",
+    "authors": [
+        {
+            "name": "CrBast",
+            "email": "bastien.crettenand@kubeah.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "slsql\\": "/src"
+        }
+    }
+}
