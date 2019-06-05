@@ -1,4 +1,4 @@
-<?php namespace slqsl\Slqsl;
+<?php namespace slsql\Slsql;
 
 /**
  * WTFPL License (http://www.wtfpl.net/) - https: //github.com/CrBast/PHP-SQL_SimpleLife/blob/master/LICENSE
