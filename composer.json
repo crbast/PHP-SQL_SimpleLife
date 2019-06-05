@@ -16,10 +16,6 @@
     "autoload": {
         "psr-4": {
             "slsql\\": "/src"
-        },
-        "files": [
-            "src/Model/Model.php",
-            "src/Slsql/Slsql.php"
-        ]
+        }
     }
 }
