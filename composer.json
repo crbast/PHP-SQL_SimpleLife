@@ -1,0 +1,7 @@
+{
+    "name": "CrBast/php-sql_simplelife",
+    "description": "Simplifier of SQL queries. Basic ORM with Model.",
+    "require": {
+        "php": "^7.2"
+    }
+}
