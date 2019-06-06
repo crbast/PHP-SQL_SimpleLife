@@ -1,6 +1,8 @@
 <?php namespace slsql\Slsql;
 
 use slsql\Config;
+use \Error;
+use \PDO;
 
 /**
  * WTFPL License (http://www.wtfpl.net/) - https: //github.com/CrBast/PHP-SQL_SimpleLife/blob/master/LICENSE
@@ -126,7 +128,7 @@ class Slsql
     public static function go($request, $array = array())
     {
         try {
-            $db = slsql::getPDO();
+            $db = Slsql::getPDO();
             $stmt = $db->prepare($request);
             $stmt->execute($array);
             //var_dump($stmt);
@@ -148,7 +150,7 @@ class Slsql
      */
     public static function goT(SLTransaction $trans)
     {
-        $db = slsql::getPDO();
+        $db = Slsql::getPDO();
         try {
             $db->beginTransaction();
             foreach ($trans->get() as $transaction) {
@@ -166,8 +168,8 @@ class Slsql
 
     private static function getPDO()
     {
-        if (!class_exists("Config")) {
-            throw new Error("Error Processing Request");
+        if (!class_exists("\slsql\Config")) {
+            throw new Error("Cannot find <\slsql\Config>");
         }
         try {
             $db = new PDO(Config::dbType . ':dbname=' . Config::dbName . ';host=' . Config::host, Config::user, Config::password);
@@ -195,7 +197,7 @@ class SLTransaction
 
     public function go()
     {
-        return slsql::goT($this);
+        return Slsql::goT($this);
     }
 }
 
