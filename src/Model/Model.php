@@ -1,5 +1,7 @@
 <?php namespace slsql\Model;
 
+use slsql\Slsql\Slsql;
+
 /*
  * WTFPL License (http://www.wtfpl.net/) - https: //github.com/CrBast/PHP-SQL_SimpleLife/blob/master/LICENSE
  *

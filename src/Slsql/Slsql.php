@@ -1,4 +1,8 @@
-<?php namespace slqsl\slqsl;
+<?php namespace slsql\Slsql;
+
+use slsql\Config;
+use \Error;
+use \PDO;
 
 /**
  * WTFPL License (http://www.wtfpl.net/) - https: //github.com/CrBast/PHP-SQL_SimpleLife/blob/master/LICENSE
@@ -114,7 +118,7 @@ class Slsql
 
     /**
      * Send Request.
-     * the parameters are in the .env file
+     * the parameters are in the Config class file (slsql\Config)
      *
      * Return :
      *      [value] = result,
@@ -124,7 +128,7 @@ class Slsql
     public static function go($request, $array = array())
     {
         try {
-            $db = slsql::getPDO();
+            $db = Slsql::getPDO();
             $stmt = $db->prepare($request);
             $stmt->execute($array);
             //var_dump($stmt);
@@ -137,7 +141,7 @@ class Slsql
 
     /**
      * Send Transaction.
-     * the parameters are in the .env file
+     * the parameters are in the Config class file (slsql\Config)
      *
      * Return :
      *      [value] = result,
@@ -146,7 +150,7 @@ class Slsql
      */
     public static function goT(SLTransaction $trans)
     {
-        $db = slsql::getPDO();
+        $db = Slsql::getPDO();
         try {
             $db->beginTransaction();
             foreach ($trans->get() as $transaction) {
@@ -164,13 +168,11 @@ class Slsql
 
     private static function getPDO()
     {
-        try {
-            require '../.env';
-        } catch (Exception $e) {
-            throw new Error("Error Processing Request");
+        if (!class_exists("\slsql\Config")) {
+            throw new Error("Cannot find <\slsql\Config>");
         }
         try {
-            $db = new PDO($env['DBType'] . ':dbname=' . $env['DBName'] . ';host=' . $env['Host'], $env['User'], $env['Password']);
+            $db = new PDO(Config::dbType . ':dbname=' . Config::dbName . ';host=' . Config::host, Config::user, Config::password);
             $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             return $db;
         } catch (PDOException $e) {
@@ -195,7 +197,7 @@ class SLTransaction
 
     public function go()
     {
-        return slsql::goT($this);
+        return Slsql::goT($this);
     }
 }
 
