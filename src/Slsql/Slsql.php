@@ -1,5 +1,7 @@
 <?php namespace slsql\Slsql;
 
+use slsql\Config;
+
 /**
  * WTFPL License (http://www.wtfpl.net/) - https: //github.com/CrBast/PHP-SQL_SimpleLife/blob/master/LICENSE
  *
@@ -114,7 +116,7 @@ class Slsql
 
     /**
      * Send Request.
-     * the parameters are in the .env file
+     * the parameters are in the Config class file (slsql\Config)
      *
      * Return :
      *      [value] = result,
@@ -137,7 +139,7 @@ class Slsql
 
     /**
      * Send Transaction.
-     * the parameters are in the .env file
+     * the parameters are in the Config class file (slsql\Config)
      *
      * Return :
      *      [value] = result,
@@ -164,13 +166,11 @@ class Slsql
 
     private static function getPDO()
     {
-        try {
-            require '../.env';
-        } catch (Exception $e) {
+        if (!class_exists("Config")) {
             throw new Error("Error Processing Request");
         }
         try {
-            $db = new PDO($env['DBType'] . ':dbname=' . $env['DBName'] . ';host=' . $env['Host'], $env['User'], $env['Password']);
+            $db = new PDO(Config::dbType . ':dbname=' . Config::dbName . ';host=' . Config::host, Config::user, Config::password);
             $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             return $db;
         } catch (PDOException $e) {
