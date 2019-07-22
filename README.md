@@ -1,10 +1,8 @@
 # PHP-SQL_SimpleLife 👌
 ## How to use 🤷
 1. `composer require crbast/slsql`
-2. Edit `/vendor/crbast/slsql/src/Config.php` or read the documentation for more possibilities
+2. Read the documentation : [📔](https://github.com/CrBast/PHP-SQL_SimpleLife/wiki)
 3. Have fun!
-
-See documentation : [📔](https://github.com/CrBast/PHP-SQL_SimpleLife/wiki)
 
 ## Info
 
