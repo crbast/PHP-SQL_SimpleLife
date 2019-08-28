@@ -1,6 +1,9 @@
 # PHP-SQL_SimpleLife 👌
 ## How to use 🤷
-1. `composer require crbast/slsql`
+1. Install library
+```bash 
+> composer require crbast/slsql 
+```
 2. Read the documentation : [📔](https://github.com/CrBast/PHP-SQL_SimpleLife/wiki)
 3. Have fun!
 
